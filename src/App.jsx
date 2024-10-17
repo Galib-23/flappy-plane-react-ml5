@@ -3,6 +3,7 @@ import building from "./assets/building.png";
 import plane from "./assets/plane.png";
 import { useState } from "react";
 import { useEffect } from "react";
+import boom from "./assets/boom.png";
 
 function App() {
   const [buildingHeight, setBuildingHeight] = useState(160);
@@ -11,11 +12,18 @@ function App() {
   const [isStarted, setIsStarted] = useState(false);
   const [isOver, setIsOver] = useState(false);
 
-
   useEffect(() => {
     let animatePlaneId;
     const animatePlane = () => {
       setPlanePosFromTop((prevPos) => {
+        if (prevPos < 150 && buildingPos > 375) {
+          setIsOver(true);
+          setIsStarted(false);
+        }
+        if (prevPos > 265 && buildingPos > 375) {
+          setIsOver(true);
+          setIsStarted(false);
+        }
         if (prevPos < 380) {
           return prevPos + 1;
         } else {
@@ -24,17 +32,17 @@ function App() {
         }
       });
       animatePlaneId = requestAnimationFrame(animatePlane);
-    }
+    };
     if (isStarted) {
       animatePlaneId = requestAnimationFrame(animatePlane);
     }
 
     return () => cancelAnimationFrame(animatePlaneId);
-  }, [isStarted]);
+  }, [buildingPos, isStarted]);
 
   const handleSpacePress = (event) => {
     if (event.key === " ") {
-      event.preventDefault(); 
+      event.preventDefault();
       setPlanePosFromTop((prevPos) => {
         if (prevPos > 2) {
           return prevPos - 50;
@@ -44,7 +52,7 @@ function App() {
       });
     }
   };
-  
+
   useEffect(() => {
     window.addEventListener("keydown", handleSpacePress);
     return () => {
@@ -52,12 +60,12 @@ function App() {
     };
   }, []);
 
-
   useEffect(() => {
     let animationFrameId;
     const animateBuilding = () => {
       setBuildingPos((prevPos) => {
         if (prevPos < 500) {
+          console.log(prevPos);
           return prevPos + 1;
         } else {
           return 0;
@@ -65,12 +73,11 @@ function App() {
       });
       animationFrameId = requestAnimationFrame(animateBuilding);
     };
-    if (isStarted) {
+    if (isStarted && !isOver) {
       animationFrameId = requestAnimationFrame(animateBuilding);
     }
     return () => cancelAnimationFrame(animationFrameId);
-  }, [isStarted]);
-
+  }, [isOver, isStarted]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">
@@ -86,10 +93,21 @@ function App() {
       >
         <div className="absolute inset-0 bg-black opacity-40"></div>
         <div>
+          {isOver && (
+            <div>
+              <div className="absolute top-[170px] left-32 z-30 text-center text-red-600">
+                <h1 className="text-4xl font-bold">
+                  9-1-1 It&apos;s an emergency!
+                </h1>
+                <p>Game Over</p>
+              </div>
+              <img src={boom} alt="" className="h-full w-full absolute z-20" />
+            </div>
+          )}
           <img
             src={plane}
             alt="plane"
-            className={`z-50 absolute h-14 w-24 left-14`}
+            className={`z-10 absolute h-10 w-20 left-14`}
             style={{ top: `${planePosFromTop}px` }}
           />
           <img
@@ -110,12 +128,28 @@ function App() {
           />
         </div>
       </div>
-      <button
-        className="mt-4 px-3 py-2 outline-teal-400 hover:bg-teal-400 hover:text-white rounded-lg shadow-md outline"
-        onClick={() => setIsStarted((prev) => !prev)}
-      >
-        {isStarted ? "Pause Game ⏸" : "Start Game ▶️"}
-      </button>
+
+      {!isStarted && !isOver && (
+        <button
+          className="mt-4 px-3 py-2 outline-teal-400 hover:bg-teal-400 hover:text-white rounded-lg shadow-md outline"
+          onClick={() => setIsStarted(true)}
+        >
+          Start Game
+        </button>
+      )}
+      {isOver && (
+        <button
+          className="mt-4 px-3 py-2 outline-teal-400 hover:bg-teal-400 hover:text-white rounded-lg shadow-md outline"
+          onClick={() => {
+            setBuildingPos(0);
+            setPlanePosFromTop(175);
+            setIsOver(false);
+            setIsStarted(true);
+          }}
+        >
+          Restart Game
+        </button>
+      )}
     </div>
   );
 }
