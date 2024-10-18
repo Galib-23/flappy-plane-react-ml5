@@ -15,6 +15,8 @@ function App() {
   const [isOver, setIsOver] = useState(false);
   const [isVideoOn, setIsVideoOn] = useState(false);
   const [fist, setFist] = useState(true);
+  const [score, setScore] = useState(0);
+  const [finalScore, setFinalScore] = useState(0);
 
   useEffect(() => {
     let animatePlaneId;
@@ -48,7 +50,7 @@ function App() {
   useEffect(() => {
     if (!fist) {
       setPlanePosFromTop((prevPos) => {
-        const newPos = prevPos - 50;
+        const newPos = prevPos - 40;
         return newPos > 0 ? newPos : 0;
       });
     }
@@ -60,7 +62,7 @@ function App() {
       event.preventDefault();
       setPlanePosFromTop((prevPos) => {
         if (prevPos > 2) {
-          return prevPos - 50;
+          return prevPos - 30;
         }
       });
     }
@@ -74,12 +76,17 @@ function App() {
   }, []);
 
   useEffect(() => {
+    if (isOver && !isStarted) {
+      setFinalScore(score);
+      setScore(0);
+    }
     let animationFrameId;
     const animateBuilding = () => {
       setBuildingPos((prevPos) => {
         if (prevPos < 500) {
           return prevPos + 1;
         } else {
+          setScore((prevScore) => prevScore + 1);
           return 0;
         }
       });
@@ -122,7 +129,8 @@ function App() {
                   <h1 className="text-4xl font-bold">
                     9-1-1 It&apos;s an emergency!
                   </h1>
-                  <p>Game Over</p>
+                  <p className="text-base">Game Over</p>
+                  <p className="text-lg text-teal-500 font-semibold">Your Score: {finalScore/2}</p>
                 </div>
                 <img
                   src={boom}
@@ -131,6 +139,7 @@ function App() {
                 />
               </div>
             )}
+            <h2 className="left-3 top-3 absolute text-cyan-400 text-2xl z-40 font-semibold">Score: {score/2}</h2>
             <img
               src={plane}
               alt="plane"
