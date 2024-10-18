@@ -91,7 +91,7 @@ const Video = ({ isVideoOn, setIsVideoOn, setFist }) => {
   
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+    <div className="min-h-screen flex flex-col items-center mt-10 gap-4">
       <div className="relative">
         <video
           ref={videoRef}
@@ -103,7 +103,7 @@ const Video = ({ isVideoOn, setIsVideoOn, setFist }) => {
         />
         <div className="absolute h-24 w-48 border-[3px] border-green-400 top-4 left-4 p-1">
           {loading && !result ? (
-            <h2 className="text-lg font-semibold text-green-500">Loading...</h2>
+            <h2 className="text-lg font-semibold text-green-500">Please wait. <br /> Loading...</h2>
           ) : result ? (
             <>
               <h1 className="text-sm font-semibold text-green-500">
