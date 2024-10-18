@@ -7,12 +7,14 @@ import boom from "./assets/boom.png";
 import Video from "./components/Video";
 
 function App() {
-  const [buildingHeight, setBuildingHeight] = useState(160);
+  //const [buildingHeight, setBuildingHeight] = useState(160);
+  const buildingHeight = 160;
   const [planePosFromTop, setPlanePosFromTop] = useState(175);
   const [buildingPos, setBuildingPos] = useState(0);
   const [isStarted, setIsStarted] = useState(false);
   const [isOver, setIsOver] = useState(false);
   const [isVideoOn, setIsVideoOn] = useState(false);
+  const [fist, setFist] = useState(true);
 
   useEffect(() => {
     let animatePlaneId;
@@ -27,7 +29,7 @@ function App() {
           setIsStarted(false);
         }
         if (prevPos < 380) {
-          return prevPos + 1;
+          return prevPos + 0.5;
         } else {
           setIsOver(true);
           setIsStarted(false);
@@ -42,6 +44,16 @@ function App() {
 
     return () => cancelAnimationFrame(animatePlaneId);
   }, [buildingPos, isStarted]);
+
+  useEffect(() => {
+    if (!fist) {
+      setPlanePosFromTop((prevPos) => {
+        const newPos = prevPos - 50;
+        return newPos > 0 ? newPos : 0;
+      });
+    }
+  }, [fist]);
+  
 
   const handleSpacePress = (event) => {
     if (event.key === " ") {
@@ -83,7 +95,11 @@ function App() {
     <div className="flex min-h-screen justify-around">
       {isVideoOn && (
         <div className="flex min-h-screen flex-col justify-center">
-          <Video isVideoOn={isVideoOn} setIsVideoOn={setIsVideoOn} />
+          <Video
+            setFist={setFist}
+            isVideoOn={isVideoOn}
+            setIsVideoOn={setIsVideoOn}
+          />
         </div>
       )}
       <div className="min-h-screen flex flex-col items-center justify-center">

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import ml5 from "ml5";
 
-const Video = ({ isVideoOn, setIsVideoOn }) => {
+const Video = ({ isVideoOn, setIsVideoOn, setFist }) => {
   const videoRef = useRef(null);
   const [gesture, setGesture] = useState("None");
   const [classifier, setClassifier] = useState(null);
@@ -14,7 +14,7 @@ const Video = ({ isVideoOn, setIsVideoOn }) => {
       setLoading(true);
       try {
         const loadedClassifier = await ml5.imageClassifier(
-          "https://teachablemachine.withgoogle.com/models/ETTQOlXEO/",
+          "https://teachablemachine.withgoogle.com/models/ETTQOlXEO/model.json",
           modelLoaded
         );
         setClassifier(loadedClassifier);
@@ -78,11 +78,17 @@ const Video = ({ isVideoOn, setIsVideoOn }) => {
           return;
         }
         setGesture(results[0].label);
+        if (results[0].label === "Fist") {
+          setFist(true);
+        } else {
+          setFist(false);
+        }
         setResult(results);
-        classifyGesture();
+        setTimeout(() => classifyGesture(), 30);
       });
     }
   };
+  
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-4">
@@ -97,7 +103,7 @@ const Video = ({ isVideoOn, setIsVideoOn }) => {
         />
         <div className="absolute h-24 w-48 border-[3px] border-green-400 top-4 left-4 p-1">
           {loading && !result ? (
-            <h2 className="text-lg font-semibold text-red-500">Loading...</h2>
+            <h2 className="text-lg font-semibold text-green-500">Loading...</h2>
           ) : result ? (
             <>
               <h1 className="text-sm font-semibold text-green-500">
